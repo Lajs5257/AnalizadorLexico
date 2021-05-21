@@ -173,8 +173,6 @@ void MainWindow::on_pushButton_2_clicked()
     QString text = ui->plainTextEdit->toPlainText();
     out << text;
     file.flush();
-    file.close();
-
 }
 
 int relaciona(char c)
@@ -297,8 +295,6 @@ int Error(int e) //Esta es la Tabla de Errores
     return 100;
 } // fin de error
 
-
-
 void MainWindow::on_btnAnaliza_clicked()
 {
     int edo, col;
@@ -335,16 +331,14 @@ void MainWindow::on_btnAnaliza_clicked()
                 {
                     cadenaResultante=cadenaResultante+""+car+"";
                 }
-
                 if(edo<27){
                     cont_cadena++;
-
                 }
                 if(edo>100){
                     cont_cadena=cont_cadena--;
                 }
             }
-            r =QString::fromStdString(cadenaResultante);
+            //concatenamos resultado de analisis
             resultado+=cadenaResultante;
             if (edo >= 100 && edo <= 144)
             {
@@ -378,6 +372,7 @@ void MainWindow::on_btnAnaliza_clicked()
                            "      Analisis Finalizado se encontraron \n"
                            "                        Errores\n"
                            " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+                //Ponemos resultados en la pantalla
                 r =QString::fromStdString(resultado);
                 ui->plainTextEdit_2->setPlainText(r);
                 break;
@@ -386,13 +381,14 @@ void MainWindow::on_btnAnaliza_clicked()
                 resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
                            "      Analisis Finalizado Correctamente\n"
                            " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+                //Ponemos resultados en la pantalla
                 r =QString::fromStdString(resultado);
                 ui->plainTextEdit_2->setPlainText(r);
                 break;
             }
+            //Ponemos resultados en la pantalla
             r =QString::fromStdString(resultado);
             ui->plainTextEdit_2->setPlainText(r);
-
     }
 }
 

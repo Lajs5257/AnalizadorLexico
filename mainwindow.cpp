@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 void Relaciona(char a);
 int Token(int e);
 int Error(int t);
-int M[27][32]= {{1,1,3,511,511,1,1,13,14,15,23,26,16,19,21,17,18,12,20,131,129,137,138,139,140,0,0,0,11,9,511,511},
+int M[27][32]= {{1,1,3,511,22,1,1,13,14,15,23,26,16,19,21,17,18,12,20,131,129,137,138,139,140,0,0,0,11,9,511,511},
                 {1,1,1,2,100,1,1,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100},
                 {1,1,1,2,500,1,1,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500},
                 {101,101,3,101,4,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101,101},
@@ -54,41 +54,38 @@ string tokenExitoso[]={"Identificador",
                        "Constantes numérica de notación científica",
                        "Constante carácter",
                        "Constante string",
-                       "Operador de asignacion",
-                       "Operador Relacional",
-                       "Operador aritmético",
-                       "Operador de asignacion",
-                       "Operador aritmético" ,
-                       "Operador aritmético" ,
-                       "Operador de asignacion",
-                       "Operador aritmético" ,
-                       "Operador aritmético" ,
-                       "Operador de asignacion" ,
-                       "Operador aritmético" ,
-                       "Operador aritmético" ,
-                       "Operador de asignacion" ,
-                       "Operador Relacional" ,
-                       "Operador Relacional",
-                       "Operador Relacional",
-                       "Operador Relacional",
-                       "Operador lógico",
-                       "Operador lógico",
-                       "Operador lógico",
-                       "Operador Relacional",
-                       "Signo de puntacion",
-                       "Signo de puntacion",
-                       "Signo de puntacion",
-                       "Operador aritmético",
-                       "Operador de asignacion",
-                       "Comentario",
-                       "Comentario",
-                       "Signo de agrupacion",
-                       "Signo de agrupacion",
-                       "Signo de agrupacion",
-                       "Signo de agrupacion",
-                       "Delimitador",
-                       "Delimitador",
-                       "Delimitador",
+                       "Operador de asignacion  = Igual",
+                       "Operador Relacional == Es igual",
+                       "Operador aritmético + Suma",
+                       "Operador de asignacion += Adicion",
+                       "Operador aritmético ++ Incremento",
+                       "Operador aritmético - Resta",
+                       "Operador de asignacion -= Sustraccion",
+                       "Operador aritmético -- Decremento",
+                       "Operador aritmético * Multiplicacion",
+                       "Operador de asignacion *= ",
+                       "Operador aritmético  ** ",
+                       "Operador aritmético % Porcentaje",
+                       "Operador de asignacion %=",
+                       "Operador Relacional < Menor que",
+                       "Operador Relacional <= Menor igual",
+                       "Operador Relacional > Mayor que",
+                       "Operador Relacional >= Mayor que",
+                       "Operador lógico && And",
+                       "Operador lógico || Or",
+                       "Operador lógico ! Not",
+                       "Operador Relacional != Diferente",
+                       "Signo de puntacion ; Punto y coma",
+                       "Signo de puntacion .. Punto punto",
+                       "Signo de puntacion , coma",
+                       "Operador aritmético / División",
+                       "Operador de asignacion /=",
+                       "Comentario /* */",
+                       "Comentario # Simple",
+                       "Signo de agrupacion [ Corchete que abre",
+                       "Signo de agrupacion ] Corchete que cierra",
+                       "Signo de agrupacion ( Parentesis que abre",
+                       "Signo de agrupacion ) Parentesis que cierra",
                        "Fin del archivo"};
 string tokenError[]={"Identificador no puede terminar en '_' ",
                      "Dato numerico  no puede terminar en '.' esta se esperaba otro numero",
@@ -267,10 +264,7 @@ int Token(int e)
         case 138: return  35;
         case 139: return  36;
         case 140: return  37;
-        case 141: return  38;
-        case 142: return  39;
-        case 143: return  40;
-        case 144: return  41;
+        case 144: return  38;
     }
     return 100;
 } //fin de token
@@ -308,6 +302,7 @@ void MainWindow::on_btnAnaliza_clicked()
     QString r;
     int T=0;
     bool AnalisisCorrecto=true;
+    if(a.length()>0){
         while ( cont_cadena <= (a.length()))
         {
             //Se reinician variables
@@ -317,26 +312,22 @@ void MainWindow::on_btnAnaliza_clicked()
             {
                 car = (char)cstr[cont_cadena];
                 col = relaciona (car);
-
                 edo = M[edo][col];
-                //Filtro para evitar que agregrue a las cadenas delimitadores
-                if(edo!=100 &&car!='\n'&&car!='\b'&&car!='\t'&&car!=' '&&car!='\0')
-                {
+                //Terminaron con la letra correspondiente
+                if(edo==104||edo==105||edo==107||edo==109||edo==110||edo==112||edo==113||edo==115||edo==116||edo==120||edo==122||edo==123||edo==124||edo==126||edo==126||edo>127){
                     cadenaResultante=cadenaResultante+""+car+"";
-                }
-                else if(edo==9 &&car!='\b')
-                {
-                    cadenaResultante=cadenaResultante+""+car+"";
-                }else if(edo==11)
-                {
-                    cadenaResultante=cadenaResultante+""+car+"";
+                }//Terminaron con dif, deja el elemento que lo termino para volver a analizarlo
+                else if(edo==100||edo==101||edo==102||edo==103||edo==106||edo==108||edo==111||edo==114||edo==117||edo==119||edo==121||edo==127){
+                    cont_cadena--;;
                 }
                 if(edo<27){
+                    //Omitimos a los delimitadores
+                    if(edo!=0&&car!='\n'&&car!='\b'&&car!='\t'&&car!=' '&&car!='\0'){
+                        cadenaResultante=cadenaResultante+""+car+"";
+                    }
                     cont_cadena++;
                 }
-                if(edo>100){
-                    cont_cadena=cont_cadena--;
-                }
+
             }
             //concatenamos resultado de analisis
             resultado+=cadenaResultante;
@@ -389,6 +380,14 @@ void MainWindow::on_btnAnaliza_clicked()
             //Ponemos resultados en la pantalla
             r =QString::fromStdString(resultado);
             ui->plainTextEdit_2->setPlainText(r);
+        }
+    }else{
+        resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                   "            Sin datos para analizar\n"
+                   " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+        //Ponemos resultados en la pantalla
+        r =QString::fromStdString(resultado);
+        ui->plainTextEdit_2->setPlainText(r);
     }
 }
 

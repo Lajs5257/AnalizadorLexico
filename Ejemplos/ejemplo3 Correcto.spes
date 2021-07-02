@@ -1,0 +1,21 @@
+library io;
+library graph;
+
+class caso1;
+	def A, B, C as int;
+	def cad as string;
+
+	main ()
+                		read(cad);
+		write("Mensaje: ", cad);
+		write("Dame 3 valores ");
+		read (A, B, C);
+		if ( A > B && A > C)
+			write ("El mayor es: ", A);
+                                     elseif (B > A && B > C)
+			write ("El mayor es: ", B);
+   		else
+			write ("El mayor es: ", C);
+		endif;	
+	endmain
+endclass

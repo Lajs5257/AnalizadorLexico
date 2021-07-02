@@ -1,0 +1,22 @@
+library io;
+library graph;
+
+class caso1;
+	def tabla, num, mult, mult2 as int;
+
+	main ()
+		write("Hagamos Tablas de Multiplicar!");
+		write("Cuantas tablas quieres calcular: ");
+		read (num);
+		
+		for mult = 1 to num do
+                                       	tabla = 1;
+			write("Tabla del ", mult);
+                                     		for mult2 = 1 to 10 do
+				tabla = mult * mult2;
+				write (mult, " * ", mult2, " = ", tabla); 	
+			endfor;
+    		endfor;	
+	write ("Fibonacci: ", fibo);
+	endmain
+endclass

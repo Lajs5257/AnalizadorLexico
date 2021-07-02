@@ -1,0 +1,8 @@
+library io;
+library graph;
+
+class caso1;
+	main ()
+		write("Curso: Lenguajes y Autómatas I");
+	endmain
+endclass

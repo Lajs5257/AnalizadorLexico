@@ -22,6 +22,8 @@ private slots:
 
     void on_btnAnaliza_clicked();
 
+    void on_btnAnaliza_2_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -1,0 +1,38 @@
+library io;
+library graph;
+
+class caso1;
+	def A,B,C as int;
+	def cad,A as string;
+
+	main ()
+		/* funcion read */
+	             	read(A);
+		/* funcion write */
+		write("hello world");
+		/* funcion Do */
+		do
+		        x=x+""+2;
+	 	        write("entraDo");
+		eval(a<b) enddo;
+
+		/* funcion while */
+		while(x<y)
+			a=a+1;
+		endwhile;
+        		A=A+1*B*C+1*B+(A+B);
+		/* funcion For */
+		for mult2 = 1 to 10 do
+		            write("entraFor");
+		            tabla = mult * mult2;
+		             /* funcion If */
+		             if ( A > B)
+			B=B+1;
+			write("entraIf");
+ 		              else
+			A=A+B+C+1;
+			write("entraElse");
+		               endif;
+		endfor;	
+	endmain
+endclass

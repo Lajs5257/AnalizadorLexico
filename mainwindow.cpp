@@ -14,19 +14,42 @@
 
 using namespace std;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
-                                          ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 }
 void Relaciona(char a);
-int Token(int e);
+int Token(int e,string token);
 int Error(int t);
 void  GetToken();
+void Semantico();
 QString cadenaAnalizar;
 int RelacionaToken(string token);
+void generarCuadruplo();
+void realizarOperacion();
+void estatutoAsig(QString Token, QString TokenTexto);
+QString existeVariable(string variable);
 static int cont_cadena_posicion = 0;
-static QStack<int> Pila,ResultadosTokens;
-static QStack<string> Tokens;
+static QStack<int> Pila,ResultadosTokens,pilaResultadoTokens;
+static QStack<string> Tokens,pilaTokens,pilaResultadoTokensTexto;
+static QStack<string> Variables,VariablesTipo;
+
+//global var
+QString cuadroResultado;
+QString typeOp1,typeOp2,typeRes;
+QStack<QString> operandos,operandosTipos;
+QStack<QString> operadores;
+QStack<int> saltos;
+string cToken;
+int cont=0;
+static int contCuad=1;
+static int contR=1;
+static bool ban1=0;
+static bool banwhile= 0;
+static bool banfor=0;
+static bool bando=0;
+static bool semantico=0;
+
 int producciones[123][123]={{1,2},
                             {1000,1004,1002, 1},
                             {-1},
@@ -359,77 +382,77 @@ string ErroresAnalisis[] = {"Inicio invalido, revise su entrada",
 
 
 string columnas[72][72] ={{"1000","library"},
-                         {"1001","@este se me fue"},
-                         {"1002",";"},
-                         {"1003","class"},
-                         {"1004","id"},
-                         {"1005","endclass"},
-                         {"1006","def"},
-                         {"1007",","},
-                         {"1008","as"},
-                         {"1009","["},
-                         {"1010","]"},
-                         {"1011",".."},
-                         {"1012","cteentera"},
-                         {"1013","int"},
-                         {"1014","float"},
-                         {"1015","char"},
-                         {"1016","string"},
-                         {"1017","bool"},
-                         {"1018","void"},
-                         {"1019","public"},
-                         {"1020","private"},
-                         {"1021","protected"},
-                         {"1022","main"},
-                         {"1023","("},
-                         {"1024",")"},
-                         {"1025","endmain"},
-                         {"1026","func"},
-                         {"1027","endfunc"},
-                         {"1028","local"},
-                         {"1029","endlocal"},
-                         {"1030","read"},
-                         {"1031","write"},
-                         {"1032","return"},
-                         {"1033","++"},
-                         {"1034","--"},
-                         {"1035","for"},
-                         {"1036","="},
-                         {"1037","to"},
-                         {"1038","do"},
-                         {"1039","endfor"},
-                         {"1040","while"},
-                         {"1041","endwhile"},
-                         {"1042","eval"},
-                         {"1043","enddo"},
-                         {"1044","if"},
-                         {"1045","elseif"},
-                         {"1046","else"},
-                         {"1047","endif"},
-                         {"1048","||"},
-                         {"1049","&&"},
-                         {"1050","!"},
-                         {"1051","=="},
-                         {"1052","!="},
-                         {"1053","<"},
-                         {"1054","<="},
-                         {"1055",">"},
-                         {"1056",">="},
-                         {"1057","+"},
-                         {"1058","-"},
-                         {"1059","*"},
-                         {"1060","/"},
-                         {"1061","%"},
-                         {"1062","ctereal"},
-                         {"1063","ctenotacion"},
-                         {"1064","ctecaracter"},
-                         {"1065","ctestring"},
-                         {"1066","+="},
-                         {"1067","-="},
-                         {"1068","*="},
-                         {"1069","/="},
-                         {"1070","%="},
-                         {"1071","$"}};
+                          {"1001","@este se me fue"},
+                          {"1002",";"},
+                          {"1003","class"},
+                          {"1004","id"},
+                          {"1005","endclass"},
+                          {"1006","def"},
+                          {"1007",","},
+                          {"1008","as"},
+                          {"1009","["},
+                          {"1010","]"},
+                          {"1011",".."},
+                          {"1012","cteentera"},
+                          {"1013","int"},
+                          {"1014","float"},
+                          {"1015","char"},
+                          {"1016","string"},
+                          {"1017","bool"},
+                          {"1018","void"},
+                          {"1019","public"},
+                          {"1020","private"},
+                          {"1021","protected"},
+                          {"1022","main"},
+                          {"1023","("},
+                          {"1024",")"},
+                          {"1025","endmain"},
+                          {"1026","func"},
+                          {"1027","endfunc"},
+                          {"1028","local"},
+                          {"1029","endlocal"},
+                          {"1030","read"},
+                          {"1031","write"},
+                          {"1032","return"},
+                          {"1033","++"},
+                          {"1034","--"},
+                          {"1035","for"},
+                          {"1036","="},
+                          {"1037","to"},
+                          {"1038","do"},
+                          {"1039","endfor"},
+                          {"1040","while"},
+                          {"1041","endwhile"},
+                          {"1042","eval"},
+                          {"1043","enddo"},
+                          {"1044","if"},
+                          {"1045","elseif"},
+                          {"1046","else"},
+                          {"1047","endif"},
+                          {"1048","||"},
+                          {"1049","&&"},
+                          {"1050","!"},
+                          {"1051","=="},
+                          {"1052","!="},
+                          {"1053","<"},
+                          {"1054","<="},
+                          {"1055",">"},
+                          {"1056",">="},
+                          {"1057","+"},
+                          {"1058","-"},
+                          {"1059","*"},
+                          {"1060","/"},
+                          {"1061","%"},
+                          {"1062","ctereal"},
+                          {"1063","ctenotacion"},
+                          {"1064","ctecaracter"},
+                          {"1065","ctestring"},
+                          {"1066","+="},
+                          {"1067","-="},
+                          {"1068","*="},
+                          {"1069","/="},
+                          {"1070","%="},
+                          {"1071","$"}};
 
 MainWindow::~MainWindow()
 {
@@ -516,13 +539,13 @@ int relaciona(char c)
     }
     //Caso comilla simple
     switch (int(c)) {
-        case 39: return 29;
+    case 39: return 29;
     }
     //Caso diferente
     return 30;
 }
 
-int Token(int e)
+int Token(int e,string token)
 {
     switch(e)
     {
@@ -568,23 +591,23 @@ int Token(int e)
     }
     return 100;
 } //fin de token
-int Error(int e) //Esta es la Tabla de Errores
+int Error(int e) //Esta es la Cuadruplos de Errores
 {
     switch (e)
     {
-        case 500:	return 0;
-        case 501:	return 1;
-        case 502:	return 2;
-        case 503:	return 3;
-        case 504:	return 4;
-        case 505:	return 5;
-        case 506:	return 6;
-        case 507:	return 7;
-        case 508:	return 8;
-        case 510:	return 9;
-        case 511:	return 10;
-        case 512:	return 11;
-        case 513:	return 12;
+    case 500:	return 0;
+    case 501:	return 1;
+    case 502:	return 2;
+    case 503:	return 3;
+    case 504:	return 4;
+    case 505:	return 5;
+    case 506:	return 6;
+    case 507:	return 7;
+    case 508:	return 8;
+    case 510:	return 9;
+    case 511:	return 10;
+    case 512:	return 11;
+    case 513:	return 12;
     }
     return 100;
 } // fin de error
@@ -635,7 +658,7 @@ void MainWindow::on_btnAnaliza_clicked()
             {
                 //Respaldamos el valor de nuestra cadena antes de asiganrle el resultado de su token correspondiente
                 identificador=cadenaResultante;
-                T =Token(edo);
+                T =Token(edo,identificador);
                 cadenaResultante = tokenExitoso[T]; //Obtiene la cadena correspondiente al estado al que llego
                 //Analisis para detectar si el identificador pertenece a las palabras reservadas
                 if(edo==100){
@@ -735,19 +758,22 @@ void GetToken(){
                 //Respaldamos el valor de nuestra cadena antes de asiganrle el resultado de su token correspondiente
                 identificador=cadenaResultante;
                 Tokens.push_front(identificador);
-                T =Token(edo);
+                T =Token(edo,identificador);
                 cadenaResultante = tokenExitoso[T]; //Obtiene la cadena correspondiente al estado al que llego
                 //Analisis para detectar si el identificador pertenece a las palabras reservadas
                 if(edo==100){
                     for(int rPR=0;rPR<32;rPR++){
                         if(identificador.compare(palabrasResevadas[rPR])==0)
                         {
-                            cadenaResultante="Palabra Reservada";
+
+                            cadenaResultante=palabrasResevadas[rPR];
                             rPR=33;
                         }
                     }
 
                 }
+                pilaResultadoTokens.push_front(edo);
+                                pilaResultadoTokensTexto.push_front(cadenaResultante);
             }
             else
             {
@@ -758,6 +784,7 @@ void GetToken(){
             }
 
             ResultadosTokens.push_front(edo);
+
             resultado+=" -> "+cadenaResultante+"\n";
             cont_cadena_posicion++;
             if(!AnalisisCorrecto){
@@ -829,10 +856,10 @@ void MainWindow::on_btnAnaliza_2_clicked()
         qDebug()<<RelacionaToken(token)<<"<- Relaciona";
         qDebug()<<Pila.top()<<"<-  pila";
         if(RelacionaToken(token)==-1){
-             ui->plainTextEdit_2->setPlainText( QString::fromStdString(tokenError[Error(ResultadosTokens.top())]));
-             continua=false;
-             QMessageBox::about(this, "SPES", "Análisis detenido, error léxico encontrado");
-             break;
+            ui->plainTextEdit_2->setPlainText( QString::fromStdString(tokenError[Error(ResultadosTokens.top())]));
+            continua=false;
+            QMessageBox::about(this, "SPES", "Análisis detenido, error léxico encontrado");
+            break;
         }
         while(RelacionaToken(token)==1080){
             token=Tokens.pop();
@@ -859,14 +886,14 @@ void MainWindow::on_btnAnaliza_2_clicked()
                     qDebug()<<"Error "<<Pila.top();
                     if(Pila.top()>1499){
                         int x =Pila.top()-1500;
-                    qDebug()<<QString::fromStdString(ErroresAnalisis[x])<<"   ";
+                        qDebug()<<QString::fromStdString(ErroresAnalisis[x])<<"   ";
 
-                    resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                        resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
                            "Error de análisis :\n"+ErroresAnalisis[x]+",\n"
                            " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
-                    QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctio encontrado");
-                    continua=false;
-                    break;
+                        QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctio encontrado");
+                        continua=false;
+                        break;
                     }else {
                         string a =columnas[Pila.top()-1000][1];
                         qDebug()<<QString::fromStdString(a)<<" <<<";
@@ -886,17 +913,17 @@ void MainWindow::on_btnAnaliza_2_clicked()
             if(MP[Pila.top()][RelacionaToken(token)-1000]<123){
                 int Salio=Pila.top();
                 Pila.pop();
-                    qDebug()<<" llenar pila "+MP[Salio][RelacionaToken(token)-1000];
-                    for(int x = 11; x >= 0; x--){
-                        if(producciones[MP[Salio][RelacionaToken(token)-1000]][x] != 0){
-                            Pila.push(producciones[MP[Salio][RelacionaToken(token)-1000]][x]);
-                            qDebug()<<Pila.top();
-                        }
+                qDebug()<<" llenar pila "+MP[Salio][RelacionaToken(token)-1000];
+                for(int x = 11; x >= 0; x--){
+                    if(producciones[MP[Salio][RelacionaToken(token)-1000]][x] != 0){
+                        Pila.push(producciones[MP[Salio][RelacionaToken(token)-1000]][x]);
+                        qDebug()<<Pila.top();
                     }
-                    if(Pila.top() == -1){
-                        qDebug()<<"saco de pila, queda esto "<<Pila.top();
-                        Pila.pop();
-                    }
+                }
+                if(Pila.top() == -1){
+                    qDebug()<<"saco de pila, queda esto "<<Pila.top();
+                    Pila.pop();
+                }
                 //imprimePila();
             }else {
                 qDebug()<<"Error- - - - "<<MP[Pila.top()][RelacionaToken(token)-1000];
@@ -912,6 +939,982 @@ void MainWindow::on_btnAnaliza_2_clicked()
     }
 
     ui->plainTextEdit_2->setPlainText(QString::fromStdString(resultado));
+}
+
+
+void MainWindow::on_btnAnaliza_3_clicked()
+{
+    semantico=1;
+    string resultado="";
+    cuadroResultado="";
+    cont_cadena_posicion=0;
+    contCuad=1;
+    contR=1;
+    ban1=0;
+    banwhile= 0;
+    banfor=0;
+    ui->Cuadruplos->clear();
+    cadenaAnalizar= ui->plainTextEdit->toPlainText();
+    while(!Pila.empty()){
+        Pila.pop();
+    }
+    while(!Variables.empty()){
+        Variables.pop();
+    }
+    while(!operadores.empty()){
+        operadores.pop();
+    }
+    while(!operandos.empty()){
+        operandos.pop();
+    }
+    while(!ResultadosTokens.empty()){
+        ResultadosTokens.pop();
+    }
+    while(!Tokens.empty()){
+        Tokens.pop();
+    }
+    while(!pilaTokens.empty()){
+        pilaTokens.pop();
+    }
+    while(!pilaResultadoTokens.empty()){
+        pilaResultadoTokens.pop();
+    }
+    while(!pilaResultadoTokensTexto.empty()){
+        pilaResultadoTokensTexto.pop();
+    }
+    Pila.push(999);
+    Pila.push(0);
+
+    GetToken();
+
+    pilaTokens=Tokens;
+
+
+    ResultadosTokens.push_front(0);
+    Tokens.push_front("$");
+    string token = Tokens.pop();
+    resultado+=token+",\n";
+    bool continua=true;
+    bool SintaxisCorrecta=true;
+    while (continua) {
+        qDebug()<<QString::fromStdString(token)<<"<-  token";
+        qDebug()<<RelacionaToken(token)<<"<- Relaciona";
+        qDebug()<<Pila.top()<<"<-  pila";
+        if(RelacionaToken(token)==-1){
+            ui->plainTextEdit_2->setPlainText( QString::fromStdString(tokenError[Error(ResultadosTokens.top())]));
+            continua=false;
+            QMessageBox::about(this, "SPES", "Análisis detenido, error léxico encontrado");
+            break;
+        }
+        while(RelacionaToken(token)==1080){
+            token=Tokens.pop();
+            ResultadosTokens.pop();
+        }
+
+        if(Pila.top()>998){
+            if(Pila.top()==999){
+                qDebug()<<"Pila acabo";
+                resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                           "      Análisis Finalizado Correctamente\n"
+                           " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+
+                continua=false;
+                Semantico();
+                break;
+            }else{
+                if(Pila.top()==RelacionaToken(token)&&Pila.top()!=999){
+                    qDebug()<<"Saco de pila";
+                    Pila.pop();
+                    token=Tokens.pop();
+                    resultado+=token+",\n";
+                    ResultadosTokens.pop();
+                }else{
+                    qDebug()<<"Error "<<Pila.top();
+                    if(Pila.top()>1499){
+                        int x =Pila.top()-1500;
+                        qDebug()<<QString::fromStdString(ErroresAnalisis[x])<<"   ";
+
+                        resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                           "Error de análisis :\n"+ErroresAnalisis[x]+",\n"
+                           " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+                        QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctio encontrado");
+                        continua=false;
+                        break;
+                    }else {
+                        string a =columnas[Pila.top()-1000][1];
+                        qDebug()<<QString::fromStdString(a)<<" <<<";
+                        resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                           "Error se esperaba -> "+a+"\n"
+                           " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+                        QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctico encontrado");
+                        continua=false;
+                        break;
+                    }
+                    break;
+                }
+            }
+        }else{
+
+            if(MP[Pila.top()][RelacionaToken(token)-1000]<123){
+                int Salio=Pila.top();
+                Pila.pop();
+                qDebug()<<" llenar pila "+MP[Salio][RelacionaToken(token)-1000];
+                for(int x = 11; x >= 0; x--){
+                    if(producciones[MP[Salio][RelacionaToken(token)-1000]][x] != 0){
+                        Pila.push(producciones[MP[Salio][RelacionaToken(token)-1000]][x]);
+                        qDebug()<<Pila.top();
+                    }
+                }
+                if(Pila.top() == -1){
+                    qDebug()<<"saco de pila, queda esto "<<Pila.top();
+                    Pila.pop();
+                }
+                //imprimePila();
+            }else {
+                qDebug()<<"Error- - - - "<<MP[Pila.top()][RelacionaToken(token)-1000];
+                string a =ErroresAnalisis[MP[Pila.top()][RelacionaToken(token)-1000]-1500];
+                resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+                           "Error -> "+a+"\n"
+                           " - - - - - - - - - - - - - - - - - - - - - - - - - - - ";
+                QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctico encontrado");
+                continua=false;
+                SintaxisCorrecta=false;
+                break;
+            }
+        }
+    }
+    if(SintaxisCorrecta){
+        if(semantico){
+            resultado=" - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - -\n"
+                   "      Generación de Codigo Intermedio Finalizada Correctamente\n"
+                   " - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - -";
+        }else {
+            resultado=" - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - -  \n"
+                   "      Generación de Codigo Intermedio Finalizada Se encontraron Errores\n"
+                   " - - - - - - - - - - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - -  ";
+        }
+        cuadroResultado+=QString::fromStdString(resultado);
+        ui->plainTextEdit_2->setPlainText(cuadroResultado);
+    }else {
+        ui->plainTextEdit_2->setPlainText(QString::fromStdString(resultado));
+    }
+}
+
+QString CuadruplosOperaciones(QString Op1, QString Op2,QString Oper){
+string e;
+string n="hola";
+n;
+n=std::to_string(contCuad);
+    if(typeOp1=="Identificador"){
+        Op1=existeVariable(Op1.toStdString());
+    }else if (typeOp1 == "Constantes numérica entera"){
+        Op1="E";
+    }else if (typeOp1=="Constantes numérica real") {
+        Op1="R";
+    }else if (typeOp1=="Constantes numérica de notación científica") {
+        Op1="N";
+    }else if (typeOp1=="Constante carácter") {
+        Op1="C";
+    }else if (typeOp1=="Constante string") {
+        Op1="S";
+    }else if(typeOp1=="resultado"){
+        Op1 = existeVariable(Op1.toStdString());
+    }
+
+    if(typeOp2=="Identificador"){
+        Op2 = existeVariable(Op2.toStdString());
+    }else if (typeOp2 == "Constantes numérica entera"){
+        Op2="E";
+    }else if (typeOp2=="Constantes numérica real") {
+        Op2="R";
+    }else if (typeOp2=="Constantes numérica de notación científica") {
+        Op2="N";
+    }else if (typeOp2=="Constante carácter") {
+        Op2="C";
+    }else if (typeOp2=="Constante string") {
+        Op2="S";
+    }else if(typeOp2=="resultado"){
+         Op2 = existeVariable(Op2.toStdString());
+    }
+
+
+    if (Op1 == "E" && Op2 == "E") {
+        if (Oper == "*") {
+            return "E";
+        } else if (Oper == "+") {
+            return "E";
+        } else if (Oper == "-") {
+            return "E";
+        } else if (Oper == "/") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "R";
+        } else if (Oper == "%") {
+            return "R";
+        } else if (Oper == "||") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "&&") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "!") {
+            return "B";
+        } else if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else if (Oper == "**") {
+            return "E";
+        } else if (Oper == "=") {
+            return "E";
+        } else if (Oper == "+=") {
+            return "E";
+        } else if (Oper == "-=") {
+            return "E";
+        } else if (Oper == "*=") {
+            return "E";
+        } else if (Oper == "/=") {
+            return "R";
+        } else if (Oper == "%=") {
+            return "R";
+        }
+    } else if ((Op1 == "E" && Op2 == "R")) {
+        if (Oper == "*") {
+            return "R";
+        } else if (Oper == "+") {
+            return "R";
+        } else if (Oper == "-") {
+            return "R";
+        } else if (Oper == "/") {
+            return "R";
+        } else if (Oper == "%") {
+            return "R";
+        } else if (Oper == "||") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "&&") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "!") {
+            return "B";
+        } else if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else if (Oper == "**") {
+            return "R";
+        } else if (Oper == "=") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "E";
+        } else if (Oper == "+=") {
+            return "R";
+        } else if (Oper == "-=") {
+            return "R";
+        } else if (Oper == "*=") {
+            return "R";
+        } else if (Oper == "/=") {
+            return "R";
+        } else if (Oper == "%=") {
+            return "R";
+        }
+    } else if (Op1 == "R" && Op2 == "E") {
+        if (Oper == "*") {
+            return "R";
+        } else if (Oper == "+") {
+            return "R";
+        } else if (Oper == "-") {
+            return "R";
+        } else if (Oper == "/") {
+            return "R";
+        } else if (Oper == "%") {
+            return "R";
+        } else if (Oper == "||") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "&&") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "!") {
+            return "B";
+        } else if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else if (Oper == "**") {
+            return "R";
+        } else if (Oper == "=") {
+            return "R";
+        } else if (Oper == "+=") {
+            return "R";
+        } else if (Oper == "-=") {
+            return "R";
+        } else if (Oper == "*=") {
+            return "R";
+        } else if (Oper == "/=") {
+            return "R";
+        } else if (Oper == "%=") {
+            return "R";
+        }
+    } else if ((Op1 == "R" && Op2 == "R")) {
+        if (Oper == "*") {
+            return "R";
+        } else if (Oper == "+") {
+            return "R";
+        } else if (Oper == "-") {
+            return "R";
+        } else if (Oper == "/") {
+            return "R";
+        } else if (Oper == "%") {
+            return "R";
+        } else if (Oper == "||") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "&&") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        } else if (Oper == "!") {
+            return "B";
+        } else if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else if (Oper == "**") {
+            return "R";
+        } else if (Oper == "=") {
+            return "R";
+        } else if (Oper == "+=") {
+            return "R";
+        } else if (Oper == "-=") {
+            return "R";
+        } else if (Oper == "*=") {
+            return "R";
+        } else if (Oper == "/=") {
+            return "R";
+        } else if (Oper == "%=") {
+            return "R";
+        }
+    } else if ((Op1 == "C" && Op2 == "C") || (Op1 == "C" && Op2 == "S")) {
+        if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "C";
+        }
+    }else if((Op1 == "S" && Op2 == "C") || (Op1 == "S" && Op2 == "S")|| (Op1 == "S" && Op2 == "E")){
+        if (Oper != "=") {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+        }
+        return "S";
+    } else if (Op1 == "B" && Op2 == "B") {
+        if (Oper == "||") {
+            return "B";
+        } else if (Oper == "&&") {
+            return "B";
+        } else if (Oper == "!") {
+            return "B";
+        } else if (Oper == "==") {
+            return "B";
+        } else if (Oper == "!=") {
+            return "B";
+        } else if (Oper == "<") {
+            return "B";
+        } else if (Oper == "<=") {
+            return "B";
+        } else if (Oper == ">") {
+            return "B";
+        } else if (Oper == ">=") {
+            return "B";
+        } else {
+            e = "Error entre tipos en el cuadruplo "+n+" \n";
+            cuadroResultado+=QString::fromStdString(e);
+            return "B";
+        }
+    } else {
+        e = "Error entre tipos en el cuadruplo "+n+" \n";
+        cuadroResultado+=QString::fromStdString(e);
+        return "E";
+    }
+}
+
+void MainWindow::Semantico(){
+    cuadroResultado="";
+    string token="",tokenTexto;
+    int tipoToken = 0;
+    bool finDeclaracion=false;
+    while(!pilaTokens.empty()){
+        token=pilaTokens.pop();
+        tokenTexto=pilaResultadoTokensTexto.pop();
+        tipoToken=pilaResultadoTokens.pop();
+        if(!finDeclaracion){
+            //Llena Cuadruplos de tipos
+            if(token.compare("def")==0){
+                token=pilaTokens.pop();
+                tokenTexto=pilaResultadoTokensTexto.pop();
+                tipoToken=pilaResultadoTokens.pop();
+
+                while(token.compare("as")){
+                    bool disponible=true;
+                    if(token.compare(",")){
+                        for(int v=0;v<Variables.count();v++){
+                            if(!token.compare(Variables[v])){
+                                disponible=false;
+                                string e=" Error la variable "+token+" ya fue definida\n";
+                                cuadroResultado+=QString::fromStdString(e);
+                                semantico=0;
+                            }
+                        }
+                        if(disponible){
+                            Variables.push(token);
+                            VariablesTipo.push("x");
+                        }
+                    }
+                    token=pilaTokens.pop();
+                    tokenTexto=pilaResultadoTokensTexto.pop();
+                    tipoToken=pilaResultadoTokens.pop();
+                }
+                token=pilaTokens.pop();
+                tokenTexto=pilaResultadoTokensTexto.pop();
+                tipoToken=pilaResultadoTokens.pop();
+
+                static QStack<int> pilaVariablesTipoTemp;
+                static QStack<string> VariablesTemp,pilaVariablesTipoTextoTemp;
+
+
+                while(!VariablesTipo.empty()&&VariablesTipo.top().compare("x")==0){
+                    if(!token.compare("int")){
+                        token="E";
+                    }
+                    if(!token.compare("float")){
+                        token="R";
+                    }
+                    if(!token.compare("char")){
+                        token="C";
+                    }
+                    if(!token.compare("string")){
+                        token="S";
+                    }
+                    if(!token.compare("bool")){
+                        token="B";
+                    }
+                    VariablesTemp.push(Variables.pop());
+                    VariablesTipo.pop();
+                    pilaVariablesTipoTextoTemp.push(token);
+                }
+                while(!VariablesTemp.empty()){
+                    Variables.push(VariablesTemp.pop());
+                    VariablesTipo.push(pilaVariablesTipoTextoTemp.pop());
+                }
+
+            }
+            if(!(token.compare("main"))){
+                finDeclaracion=true;
+            }
+        }
+        //Operaciones dentro del main
+        if(finDeclaracion){
+            //Estatuto asignacion
+            if(!(tokenTexto.compare(tokenExitoso[0]))){
+                qDebug()<<"Hola";
+                estatutoAsig(QString::fromStdString(token),QString::fromStdString(tokenTexto));
+
+            }
+            if(!(tokenTexto.compare("if"))){
+                qDebug()<<"Hola if";
+                operadores.push("/MFF");
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop())); 
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                operadores.push(QString::fromStdString(pilaTokens.pop()));
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                generarCuadruplo();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                cuadrupoSaltoFalso();
+            }
+            if(!(tokenTexto.compare("else"))){
+                qDebug()<<"Hola else";
+                //llena el salto en falso pendiente del if y genera el salto incondicional hasta el elseif
+                ban1=1;
+                    llenarSaltoTope();//llena el ultimo salto pendiente
+                    cuadruploSaltoIncondicional();
+            }
+            if(!(tokenTexto.compare("endif"))){
+                qDebug()<<"Hola endif";
+                llenarSaltoTope();// llena el salto en el tope de la fila de saltos con el contador de l semantico
+            }
+            if(!(tokenTexto.compare("while"))){
+                operadores.push("/MFF");
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                operadores.push(QString::fromStdString(pilaTokens.pop()));
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                generarCuadruplo();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                saltos.push(contCuad-1);
+                cuadrupoSaltoFalso();
+                operadores.pop();
+            }
+            if(!(tokenTexto.compare("endwhile"))){
+                qDebug()<<"Hola endwhile";
+
+                ban1=1;
+                llenarSaltoTope();
+                cuadruploSaltoIncondicional();
+                banwhile=1;
+                llenarSaltoTope();
+
+            }
+            if(!(tokenTexto.compare("for"))){
+                qDebug()<<"Hola for";
+
+                Variables.push(pilaTokens.top());
+                VariablesTipo.push("E");
+
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                pilaResultadoTokensTexto.pop();
+                operadores.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+
+                QString Op1,Asig,Ope,Res,Op2;
+                typeOp2= operandosTipos.pop();
+                typeOp1= operandosTipos.pop();
+                Res= operandos.pop();
+                Op1= operandos.pop();
+                Ope= operadores.pop();
+                Asig= CuadruplosOperaciones(Op1,Res,Ope);
+
+                ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+                QString num=QString::number(contCuad);
+                ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+                ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem(Ope)); //oper
+                ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(Op1)); //op1
+                ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(" - ")); //op2
+                ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(Res)); //res
+
+                qDebug()<<num<<"     "<<Ope<<"     "<<Op1<<"     "<<"-"<<"     "<<Res<<"     ";
+                contCuad++;
+
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+
+                Op2= operandos.pop();
+                Asig= CuadruplosOperaciones(Op1,Op2,Ope);
+
+                num=QString::number(contCuad);
+                ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+                ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem(">")); //oper
+                ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(Op1)); //op1
+                ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(Op2)); //op2
+                QString r=QString("R%1").arg(contR);
+                ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(r)); //res
+                qDebug()<<num<<"     "<<">"<<"     "<<Op1<<"     "<<Op2<<"     "<<r<<"     ";
+                contR++;
+
+                Variables.push(r.toStdString());
+                VariablesTipo.push(Asig.toStdString());
+
+                operandos.push(r);
+                operandosTipos.push("B");
+                saltos.push(contCuad-1);
+                saltos.push(contCuad);
+                                contCuad++;
+                cuadrupoSaltoVerdadero();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+            }
+            if(!(tokenTexto.compare("endfor"))){
+                qDebug()<<"Hola endfor";
+                qDebug() << "Salto for";
+                //
+                ban1=1;
+                qDebug() << "antes del sv/sf";
+
+                llenarSaltoTope();
+               qDebug() << "antes de salto Incondicional";
+
+                cuadruploSaltoIncondicional();
+               banfor=1;
+
+              //
+               llenarSaltoTope();
+            }
+            if(!(tokenTexto.compare("do"))){
+                qDebug()<<"Hola do";
+                saltos.push(contCuad);
+            }
+            if(!(tokenTexto.compare("eval"))){
+                qDebug()<<"Hola eval";
+                bando=1;
+                operadores.push("/MFF");
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                operadores.push(QString::fromStdString(pilaTokens.pop()));
+                pilaResultadoTokensTexto.pop();
+                operandos.push(QString::fromStdString(pilaTokens.pop()));
+                operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+                generarCuadruplo();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                cuadrupoSaltoFalso();
+                operadores.pop();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                llenarSaltoTope();
+            }
+
+            if(!(tokenTexto.compare("read"))){
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                if(pilaResultadoTokensTexto.top()=="Identificador"){
+                    existeVariable(pilaTokens.top());
+                }else {
+                    string e=" Error el estatuto read solo admite identificadores: "+pilaTokens.top()+" no es valido\n";
+                    cuadroResultado+=QString::fromStdString(e);
+                }
+                pilaResultadoTokensTexto.pop();
+
+                QString leer=QString::fromStdString(pilaTokens.pop());
+
+                ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+                QString num=QString::number(contCuad);
+                ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+                ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem("read")); //oper
+                ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem("  -  ")); //op1
+                ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem("  -  ")); //op2
+                ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(leer)); //res
+
+                qDebug()<<num<<"     "<<"read"<<"     "<<" - "<<"     "<<" - "<<"     "<<leer<<"     ";
+                contCuad++;
+
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+            }
+            if(!(tokenTexto.compare("write"))){
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+
+                QString Op1,Asig,Ope,Res,Op2;
+                typeOp2= "Constante string";
+                typeOp1 = QString::fromStdString(pilaResultadoTokensTexto.pop());
+                Op1= QString::fromStdString(pilaTokens.pop());
+                Op2= "";
+                Ope= "=";
+
+                Asig= CuadruplosOperaciones(Op1,Op2,Ope);
+
+                QString escribir=Op1;
+                ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+                QString num=QString::number(contCuad);
+                ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+                ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem("write")); //oper
+                ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem("  -  ")); //op1
+                ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem("  -  ")); //op2
+                ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(escribir)); //res
+
+                qDebug()<<num<<"     "<<"write"<<"     "<<" - "<<"     "<<" - "<<"     "<<escribir<<"     ";
+                contCuad++;
+
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+            }
+        }
+    }
+
+}
+//Cuadruplo asig
+void MainWindow::estatutoAsig(QString Token, QString TokenTexto){
+    QString token=Token,tokenTexto=TokenTexto;
+    int tipoToken = 0;
+    operandos.push(token);
+    operandosTipos.push(tokenTexto);
+    token = QString::fromStdString(pilaTokens.pop());
+    tokenTexto = QString::fromStdString(pilaResultadoTokensTexto.pop());
+    operadores.push(token);
+
+    typeOp1=QString::fromStdString(pilaResultadoTokensTexto.top());
+    while (pilaTokens.top()!=";") {
+        string temp = pilaTokens.top();
+        /*a*/     if (pilaTokens.top()=="*"||pilaTokens.top()=="/"||pilaTokens.top()=="+"||pilaTokens.top()=="-") {
+            operadores.push(QString::fromStdString(pilaTokens.pop()));
+            pilaResultadoTokensTexto.pop();
+            /*b*/     }else if (pilaTokens.top()!="("&&pilaTokens.top()!=")") {
+            operandos.push(QString::fromStdString(pilaTokens.pop()));
+            operandosTipos.push(QString::fromStdString(pilaResultadoTokensTexto.pop()));
+            temp = pilaTokens.top();
+            if(pilaTokens.top()=="*"||pilaTokens.top()=="/"){
+                if (operadores.top()=="*"||operadores.top()=="/") {
+                    generarCuadruplo();
+                    if ((operadores.top()=="+"||operadores.top()=="-")&&pilaTokens.top()!="*"&&pilaTokens.top()!="/") {
+                        generarCuadruplo();
+                    }
+                }else{
+                    // No hace nada
+                }
+            }else{
+                if (operadores.top()!="/MFF"&&operadores.top()!="=") {
+                    generarCuadruplo();
+                    if(operadores.top()=="+"||operadores.top()=="-"){
+                        generarCuadruplo();
+                    }
+                }else {
+                    //nada
+                }
+            }
+            /*c*/   }else{
+            if(pilaTokens.top()=="("){
+                operadores.push("/MFF");
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+            }else {
+                operadores.pop();
+                pilaTokens.pop();
+                pilaResultadoTokensTexto.pop();
+                if (operadores.top()=="*"||operadores.top()=="/"||operadores.top()=="+"||operadores.top()=="-") {
+                    generarCuadruplo();
+                }
+            }
+        }
+    }
+    pilaTokens.pop();
+    pilaResultadoTokensTexto.pop();
+    QString Op1,Asig,Ope,Res;
+    typeOp2= operandosTipos.pop();
+    typeOp1= operandosTipos.pop();
+    Res= operandos.pop();
+    Op1= operandos.pop();
+    Ope= operadores.pop();
+    Asig= CuadruplosOperaciones(Op1,Res,Ope);
+
+    ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+    QString num=QString::number(contCuad);
+    ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+    ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem(Ope)); //oper
+    ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(Op1)); //op1
+    ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(" - ")); //op2
+    ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(Res)); //res
+
+    qDebug()<<num<<"     "<<Ope<<"     "<<Op1<<"     "<<"-"<<"     "<<Res<<"     ";
+    contCuad++; //agregar a la pila el resultado
+}
+void MainWindow::generarCuadruplo()
+{
+    QString Op1,Op2,Ope,Res;
+    typeOp2= operandosTipos.pop();
+    typeOp1= operandosTipos.pop();
+    Op2= operandos.pop();
+    Op1= operandos.pop();
+    Ope= operadores.pop();
+    Res= CuadruplosOperaciones(Op1,Op2,Ope);
+
+
+
+    ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+    QString num=QString::number(contCuad);
+    ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+    ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem(Ope)); //oper
+    ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(Op1)); //op1
+    ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(Op2)); //op2
+    QString r=QString("R%1").arg(contR);
+    ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem(r)); //res
+
+    qDebug()<<num<<"     "<<Ope<<"     "<<Op2<<"     "<<Op1<<"     "<<r<<"     ";
+    operandos.push(r);
+    operandosTipos.push("resultado");
+    Variables.push(r.toStdString());
+    VariablesTipo.push(Res.toStdString());
+    contCuad++; //agregar a la pila el resultado
+    contR++;
+}
+
+void MainWindow::cuadrupoSaltoFalso()
+{
+    QString op = operandos.pop();// saca operando para el sf
+    operandosTipos.pop();
+    ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+    QString num=QString::number(contCuad);
+    //crea en la Cuadruplos el cuadruplo del salto en falso
+    ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+    ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem("sf")); //oper
+    ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(" - "));
+    ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(op)); //op1
+    ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem("")); //res
+
+    contCuad++; //agregar a la pila el resultado
+
+    qDebug() << "aqui hizo el salto";
+    saltos.push(contCuad-1); // ignorar
+
+}
+void  MainWindow::cuadrupoSaltoVerdadero()
+{
+    QString op = operandos.pop();
+
+    ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+    QString num=QString::number(contCuad);
+
+    ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+    ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem("sv")); //oper
+    ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(" - "));
+    ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(op)); //op1
+    ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem("")); //res
+
+    contCuad++; //agregar a la pila el resultado
+
+    saltos.push(contCuad-1);
+}
+void  MainWindow::cuadruploSaltoIncondicional()
+{
+
+    ui->Cuadruplos->insertRow(ui->Cuadruplos->rowCount());
+    QString num=QString::number(contCuad);
+
+    ui->Cuadruplos->setItem(contCuad-1,0,new QTableWidgetItem(num)); //num
+    ui->Cuadruplos->setItem(contCuad-1,1,new QTableWidgetItem("si")); //oper
+    ui->Cuadruplos->setItem(contCuad-1,2,new QTableWidgetItem(" - ")); //op1
+    ui->Cuadruplos->setItem(contCuad-1,3,new QTableWidgetItem(" - ")); //op1
+    ui->Cuadruplos->setItem(contCuad-1,4,new QTableWidgetItem("")); //res
+
+    contCuad++; //agregar a la pila el resultado
+    qDebug() << "si lo metio";
+    saltos.push(contCuad-1);
+}
+
+void  MainWindow::llenarSaltoTope()
+{
+    //imprimeSem();
+    int aux=saltos.pop();
+    qDebug() << "Tope de saltos"<< aux;
+    QString num;
+
+    if(banfor)
+    {
+        qDebug() << "Llenando SI for";
+        //imprimeSem();
+        int numa=(contCuad);
+        qDebug ()<< "pila saltos" << saltos.size();
+        int aux2=saltos.pop();
+        qDebug() << saltos.size();
+
+
+        qDebug() << "este es el cuadruplo a llenar";
+        qDebug() << "auxiliar2"<< aux2 << "{"<<aux << "},{"<<4<<"}";
+
+        ui->Cuadruplos->setItem(aux-1,4,new QTableWidgetItem(QString::number(aux2)));
+        banfor=0;
+    }else if(ban1){
+            num=QString::number(contCuad+1);
+            ui->Cuadruplos->setItem(aux-1,4,new QTableWidgetItem(num));
+            ban1=0;
+        } else if(!banwhile&&!bando){
+            num=QString::number(contCuad);
+            ui->Cuadruplos->setItem(aux-1,4,new QTableWidgetItem(num));
+        }
+    if(banwhile)
+    {
+        qDebug() << "Llenando SI while";
+        int numa=(contCuad);
+        int aux2=saltos.pop();
+
+        qDebug() << "auxiliar2"<< aux2 << "{"<<contCuad << "},{"<<4<<"}";
+
+        ui->Cuadruplos->setItem(contCuad-2,4,new QTableWidgetItem(QString::number(aux2)));
+        banwhile=0;
+    }
+
+    if(bando)
+    {
+        qDebug() << "Llenando SF do-enddo";
+        int aux2=saltos.pop();
+
+        ui->Cuadruplos->setItem(aux-1,4,new QTableWidgetItem(QString::number(aux2)));
+        bando=0;
+    }
+}
+
+QString existeVariable(string variable){
+    bool existe = false;
+    for(int x=0;x<Variables.count();x++){
+        if(!variable.compare(Variables[x])){
+            existe= true;
+            return QString::fromStdString(VariablesTipo[x]);
+        }
+    }
+    if (!existe) {
+        string e=" Error la variable "+variable+" no fue definida\n";
+        cuadroResultado+=QString::fromStdString(e);
+        semantico=0;
+        Variables.push(variable);
+        VariablesTipo.push("E");
+    }
+    return "E";
 }
 
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>1295</width>
     <height>600</height>
    </rect>
   </property>
@@ -231,13 +231,112 @@ border-color: rgb(93, 67, 81);</string>
      <string>Analisis sintactico</string>
     </property>
    </widget>
+   <widget class="QTableWidget" name="Cuadruplos">
+    <property name="geometry">
+     <rect>
+      <x>920</x>
+      <y>170</y>
+      <width>351</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::NoEditTriggers</set>
+    </property>
+    <attribute name="horizontalHeaderCascadingSectionResizes">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>69</number>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>#</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Operando</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>OP1</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>OP2</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>RES</string>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>1020</x>
+      <y>130</y>
+      <width>191</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial Black</family>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:rgb(93, 67, 81)</string>
+    </property>
+    <property name="text">
+     <string>C U A D R U P L O S </string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnAnaliza_3">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>490</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>Pulsa para analizar</string>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:rgb(93, 67, 81) ;color:white</string>
+    </property>
+    <property name="text">
+     <string>Codigo Intermedio</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>1295</width>
      <height>25</height>
     </rect>
    </property>

@@ -24,6 +24,16 @@ private slots:
 
     void on_btnAnaliza_2_clicked();
 
+    void on_btnAnaliza_3_clicked();
+
+    // - - - - - - -- - - - semantico - - - - - - - - - - -
+    void generarCuadruplo();
+    void estatutoAsig(QString Token, QString TokenTexto);
+    void Semantico();
+    void cuadrupoSaltoFalso();
+    void cuadrupoSaltoVerdadero();
+    void cuadruploSaltoIncondicional();
+    void llenarSaltoTope();
 private:
     Ui::MainWindow *ui;
 };

@@ -1,6 +1,13 @@
 # AnalizadorLexico
-![imagen](https://user-images.githubusercontent.com/82974706/118877870-90ece380-b8b4-11eb-916d-b4be6e662840.png)
-![imagen](https://user-images.githubusercontent.com/82974706/118877941-a95cfe00-b8b4-11eb-842d-3276a7f8b106.png)
-New Version, Added syntactic parser and intermediate code generator
+```javascript
+const Spes = {
+  Description: 'School project in which I design a language called 'Spes', where its compiler was developed, currently we can analyze lexically, semantically, syntactically and generate intermediate code',
+  code: ['C++','XML'], 
+  tools: ['QT Creator'],
+  school subject: ['Languages and automatas I','Languages and automatas II'],
+}
+```
 ![image](https://user-images.githubusercontent.com/82974706/155896087-d6a84751-0c87-49b5-b1e4-ef00e775e3af.png)
+![image](https://user-images.githubusercontent.com/82974706/155896147-1982b6d3-6ea0-4db6-a349-0ba33e595bb3.png)
+
 

@@ -2,7 +2,7 @@
 ```javascript
 const Spes = {
   Description: 'School project in which I design a language called 'Spes', where its compiler was developed, currently we can analyze lexically, semantically, syntactically and generate intermediate code',
-  code: ['C++','XML'], 
+  code: ['C++'], 
   tools: ['QT Creator'],
   school subject: ['Languages and automatas I','Languages and automatas II'],
 }

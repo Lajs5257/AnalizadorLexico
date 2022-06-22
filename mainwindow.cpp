@@ -832,7 +832,7 @@ int RelacionaToken(string token){
         }
     }else
     {
-        return -1; // Este nos indica que se sacara de la pila
+        return -1; // Error lexico encontrado
     }
 }
 // -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

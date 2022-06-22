@@ -49,8 +49,8 @@ static bool banwhile= 0;
 static bool banfor=0;
 static bool bando=0;
 static bool semantico=0;
-
-int producciones[123][123]={{1,2},
+// Ya jalo con 12, el 123 era para evitar que tronara
+int producciones[123][12]={{1,2},
                             {1000,1004,1002, 1},
                             {-1},
                             {1003,1004,1002,3,4,1005},
@@ -772,8 +772,14 @@ void GetToken(){
                     }
 
                 }
+                // --------------------------------------------------------------------------------------------------------------
+                // Esto se ocupara para el sintactico
+                // --------------------------------------------------------------------------------------------------------------
+                // Aqui se guarda el token en la lista de tokens de manera inversa
                 pilaResultadoTokens.push_front(edo);
                 pilaResultadoTokensTexto.push_front(cadenaResultante);
+                // --------------------------------------------------------------------------------------------------------------
+                // --------------------------------------------------------------------------------------------------------------
             }
             else
             {
@@ -782,7 +788,7 @@ void GetToken(){
                 AnalisisCorrecto=false;
                 cont_cadena_posicion=cadenaAnalizar.size();
             }
-
+            // Aqui se guarda el token resultado en la lista de tokens de manera inversa
             ResultadosTokens.push_front(edo);
 
             resultado+=" -> "+cadenaResultante+"\n";
@@ -804,7 +810,7 @@ int RelacionaToken(string token){
             if(token.compare(columnas[x][1])==0)
             {
                 int r=stoi(columnas[x][0]);
-                return r;
+                return r; // Retorno el numero de columna
             }
         }
         if(ResultadosTokens.top()==100){ // Identificador
@@ -826,9 +832,15 @@ int RelacionaToken(string token){
         }
     }else
     {
-        return -1;
+        return -1; // Este nos indica que se sacara de la pila
     }
 }
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------ANALISIS SINTACTICO-------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 void MainWindow::on_btnAnaliza_2_clicked()
 {
     string resultado="";
@@ -930,6 +942,8 @@ void MainWindow::on_btnAnaliza_2_clicked()
                 qDebug()<<" llenar pila "+MP[Salio][RelacionaToken(token)-1000];
                 // Y procedo a llenar mi pila con la produccion que corresponde
                 for(int x = 11; x >= 0; x--){
+                    // este ciclo es para recorrer la produccion y poder añadir todos los elementos
+                    // Si son diferentes de 0 entonces se añade a la pila
                     if(producciones[MP[Salio][RelacionaToken(token)-1000]][x] != 0){
                         Pila.push(producciones[MP[Salio][RelacionaToken(token)-1000]][x]);
                         qDebug()<<Pila.top();
@@ -1070,7 +1084,7 @@ void MainWindow::on_btnAnaliza_3_clicked()
                 }
             }
         }else{
-
+            //Aquie
             if(MP[Pila.top()][RelacionaToken(token)-1000]<123){
                 int Salio=Pila.top();
                 Pila.pop();

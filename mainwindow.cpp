@@ -773,7 +773,7 @@ void GetToken(){
 
                 }
                 pilaResultadoTokens.push_front(edo);
-                                pilaResultadoTokensTexto.push_front(cadenaResultante);
+                pilaResultadoTokensTexto.push_front(cadenaResultante);
             }
             else
             {

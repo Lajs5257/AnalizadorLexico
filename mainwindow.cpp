@@ -796,30 +796,32 @@ void GetToken(){
         }
     }
 }
+// nos devuelve que columna es el token de entrada
 int RelacionaToken(string token){
     if(ResultadosTokens.top()<500){
         for(int x=0;x<72;x++){
+            // Lo busco en mis columnas definidas
             if(token.compare(columnas[x][1])==0)
             {
                 int r=stoi(columnas[x][0]);
                 return r;
             }
         }
-        if(ResultadosTokens.top()==100){
+        if(ResultadosTokens.top()==100){ // Identificador
             return 1004;
-        }else if (ResultadosTokens.top()==101) {
+        }else if (ResultadosTokens.top()==101) { // Constante numerica
             return 1012;
-        }else if (ResultadosTokens.top()==102) {
+        }else if (ResultadosTokens.top()==102) { // Constante real
             return 1062;
-        }else if (ResultadosTokens.top()==103) {
+        }else if (ResultadosTokens.top()==103) { // Constante de notacion
             return 1063;
-        }else if (ResultadosTokens.top()==104) {
+        }else if (ResultadosTokens.top()==104) { // Constante caracter
             return 1064;
-        }else if (ResultadosTokens.top()==105) {
+        }else if (ResultadosTokens.top()==105) { // Constante string
             return 1065;
-        }else if (ResultadosTokens.top()==134) {
+        }else if (ResultadosTokens.top()==134) { // Comentario de bloque
             return 1080;
-        }else if (ResultadosTokens.top()==136) {
+        }else if (ResultadosTokens.top()==136) { // Comentario de linea
             return 1080;
         }
     }else
@@ -831,7 +833,9 @@ void MainWindow::on_btnAnaliza_2_clicked()
 {
     string resultado="";
     cont_cadena_posicion=0;
+    // obtengo el texto
     cadenaAnalizar= ui->plainTextEdit->toPlainText();
+    // Limpio mis pilas
     while(!Pila.empty()){
         Pila.pop();
     }
@@ -841,17 +845,20 @@ void MainWindow::on_btnAnaliza_2_clicked()
     while(!Tokens.empty()){
         Tokens.pop();
     }
+    // Añado la bandera que me indicara el final
     Pila.push(999);
     Pila.push(0);
-
+    // Genero mis pilas de tokens,edo's y resultadosToken
     GetToken();
-
+// añado banderas
     ResultadosTokens.push_front(0);
     Tokens.push_front("$");
+    // Obtengo el primer token
     string token = Tokens.pop();
     resultado+=token+",\n";
     bool continua=true;
     while (continua) {
+
         qDebug()<<QString::fromStdString(token)<<"<-  token";
         qDebug()<<RelacionaToken(token)<<"<- Relaciona";
         qDebug()<<Pila.top()<<"<-  pila";
@@ -861,13 +868,16 @@ void MainWindow::on_btnAnaliza_2_clicked()
             QMessageBox::about(this, "SPES", "Análisis detenido, error léxico encontrado");
             break;
         }
+        // Quito comentarios que tienen 1080 para definirlos
         while(RelacionaToken(token)==1080){
             token=Tokens.pop();
             ResultadosTokens.pop();
         }
-
-        if(Pila.top()>998){
-            if(Pila.top()==999){
+        // reviso si el elemento es un conjunto terminal
+        // Del 1000-1500 lo son
+        // 999 es nuestra bandera de fin
+        if(Pila.top()>=999){
+            if(Pila.top()==999){ // Si es 999 esto termina  x= nexttoken = $
                 qDebug()<<"Pila acabo";
                 resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
                            "      Análisis Finalizado Correctamente\n"
@@ -875,14 +885,17 @@ void MainWindow::on_btnAnaliza_2_clicked()
                 QMessageBox::about(this, "SPES", "Análisis finalizado correctamente");
                 continua=false;
                 break;
-            }else{
-                if(Pila.top()==RelacionaToken(token)&&Pila.top()!=999){
+            }else{ // Si no entonces
+
+                if(Pila.top()==RelacionaToken(token)&&Pila.top()!=999){ //X = Nexttoken y <> $
+                    // Sacamos X de la pila y removemos el nexttoken
                     qDebug()<<"Saco de pila";
                     Pila.pop();
                     token=Tokens.pop();
                     resultado+=token+",\n";
                     ResultadosTokens.pop();
                 }else{
+                    // Error
                     qDebug()<<"Error "<<Pila.top();
                     if(Pila.top()>1499){
                         int x =Pila.top()-1500;
@@ -894,7 +907,7 @@ void MainWindow::on_btnAnaliza_2_clicked()
                         QMessageBox::about(this, "SPES", "Análisis detenido, error sintáctio encontrado");
                         continua=false;
                         break;
-                    }else {
+                    }else { // Se esperaba X
                         string a =columnas[Pila.top()-1000][1];
                         qDebug()<<QString::fromStdString(a)<<" <<<";
                         resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
@@ -908,24 +921,27 @@ void MainWindow::on_btnAnaliza_2_clicked()
                 }
             }
         }
-        else {
+        else { // Si no entonces X no es un elemento terminal
 
-            if(MP[Pila.top()][RelacionaToken(token)-1000]<123){
+            if(MP[Pila.top()][RelacionaToken(token)-1000]<123){  // Si M[X,nexttoken] = X -> Y1,Y2
                 int Salio=Pila.top();
+                // Saco de la pila
                 Pila.pop();
                 qDebug()<<" llenar pila "+MP[Salio][RelacionaToken(token)-1000];
+                // Y procedo a llenar mi pila con la produccion que corresponde
                 for(int x = 11; x >= 0; x--){
                     if(producciones[MP[Salio][RelacionaToken(token)-1000]][x] != 0){
                         Pila.push(producciones[MP[Salio][RelacionaToken(token)-1000]][x]);
                         qDebug()<<Pila.top();
                     }
                 }
+                // Si es -1 solamente saco de la pila
                 if(Pila.top() == -1){
                     qDebug()<<"saco de pila, queda esto "<<Pila.top();
                     Pila.pop();
                 }
                 //imprimePila();
-            }else {
+            }else { // Se no entonces casilla vacia
                 qDebug()<<"Error- - - - "<<MP[Pila.top()][RelacionaToken(token)-1000];
                 string a =ErroresAnalisis[MP[Pila.top()][RelacionaToken(token)-1000]-1500];
                 resultado+=" - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
